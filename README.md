@@ -35,5 +35,5 @@ Follow these steps to run the Reinforcement Learning simulation on your local ma
 
 ### 1. Clone the Repository
 ```bash
-git clone [https://github.com/YourUsername/RL-BioFarm-Optimization.git](https://github.com/YourUsername/RL-BioFarm-Optimization.git)
+git clone [https://github.com/YourUsername/RL-BioFarm-Optimization.git](https://github.com/VIGHNESH002/RL-BioFarm-Optimization.git)
 cd RL-BioFarm-Optimization
