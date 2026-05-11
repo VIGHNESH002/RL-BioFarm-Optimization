@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RL Bio-Farm Live Simulation</title>
+    <style>
+        body { background-color: #1e1e1e; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; overflow: hidden; }
+        .dashboard { display: flex; justify-content: space-around; padding: 20px; background: #2d2d2d; border-bottom: 2px solid #4caf50; }
+        .metric { font-size: 24px; font-weight: bold; color: #4caf50; }
+        
+        /* The Environment Box */
+        .farm-container { position: relative; width: 400px; height: 500px; margin: 40px auto; border: 4px solid #555; border-radius: 10px; background: #111; overflow: hidden; }
+        
+        /* Visual Elements */
+        #led-light { position: absolute; top: 0; left: 0; width: 100%; height: 100px; background: rgba(255, 235, 59, 0); transition: background 0.3s ease; box-shadow: 0 0 50px rgba(255, 235, 59, 0); }
+        #plant { position: absolute; bottom: 50px; left: 150px; width: 100px; height: 10px; background: #4caf50; border-radius: 5px 5px 0 0; transition: height 0.5s ease; }
+        #water-level { position: absolute; bottom: 0; left: 0; width: 100%; height: 50px; background: #2196f3; opacity: 0.6; transition: height 0.5s ease; }
+        
+        /* The Floating Reward Effect */
+        .reward-popup { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 40px; font-weight: bold; opacity: 0; animation: floatUp 1s ease-out; }
+        @keyframes floatUp {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+            100% { transform: translate(-50%, -150%) scale(1.5); opacity: 0; }
+        }
+        .positive { color: #00ff00; text-shadow: 0 0 10px #00ff00; }
+        .negative { color: #ff0000; text-shadow: 0 0 10px #ff0000; }
+        
+        button { padding: 15px 30px; font-size: 20px; background: #4caf50; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px; }
+        button:hover { background: #45a049; }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <div>Day: <span id="day-val" class="metric">0</span>/60</div>
+        <div>Total Penalty: <span id="cost-val" class="metric" style="color: #ff5722;">0.00</span></div>
+    </div>
+
+    <button onclick="startSimulation()">Start RL Simulation</button>
+
+    <div class="farm-container">
+        <div id="led-light"></div>
+        <div id="plant"></div>
+        <div id="water-level"></div>
+        <!-- Floating rewards will be injected here -->
+    </div>
+
+    <script>
+        function startSimulation() {
+            var ws = new WebSocket("ws://localhost:8000/ws");
+            
+            ws.onmessage = function(event) {
+                var data = JSON.parse(event.data);
+                
+                // Update Dashboard Numbers
+                document.getElementById('day-val').innerText = data.day;
+                document.getElementById('cost-val').innerText = data.total_cost;
+                
+                // Animate Environment
+                // 1. Plant grows up to 300px tall
+                document.getElementById('plant').style.height = (data.growth * 300) + "px"; 
+                // 2. Water level changes
+                document.getElementById('water-level').style.height = (data.moisture * 100) + "px";
+                // 3. LED Light flashes
+                var lightIntensity = data.led_intensity * 0.8; // max 0.8 opacity
+                document.getElementById('led-light').style.background = `rgba(255, 235, 59, ${lightIntensity})`;
+                document.getElementById('led-light').style.boxShadow = `0 0 ${data.led_intensity * 100}px rgba(255, 235, 59, ${lightIntensity})`;
+
+                // 4. Crazy Floating Reward Effect
+                createRewardPopup(data.reward);
+            };
+        }
+
+        function createRewardPopup(rewardValue) {
+            var popup = document.createElement('div');
+            popup.className = 'reward-popup ' + (rewardValue >= 0 ? 'positive' : 'negative');
+            popup.innerText = (rewardValue >= 0 ? '+' : '') + rewardValue;
+            
+            document.querySelector('.farm-container').appendChild(popup);
+            
+            // Remove the element after animation finishes
+            setTimeout(() => { popup.remove(); }, 1000);
+        }
+    </script>
+</body>
+</html>
