@@ -1,40 +1,60 @@
-# 🌱 RL-Powered Bio-Farm Optimization 
+# 🌱 Autonomous Bio-Farm Optimization Engine
 
-[![Python 3.10](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3100/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.100.0-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com/)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.25.0-FF4B4B.svg?logo=streamlit)](https://streamlit.io/)
-[![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED.svg?logo=docker)](https://www.docker.com/)
-[![CI/CD](https://github.com/YourUsername/RL-BioFarm-Optimization/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/YourUsername/RL-BioFarm-Optimization/actions)
+<div align="center">
+  <img src="https://img.shields.io/badge/Python-3.10-3776AB.svg?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
+  <img src="https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi" alt="FastAPI" />
+  <img src="https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white" alt="Streamlit" />
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
+  <img src="https://img.shields.io/badge/MLflow-0194E2?style=for-the-badge&logo=mlflow&logoColor=white" alt="MLflow" />
+  <img src="https://img.shields.io/badge/DVC-945DD6?style=for-the-badge&logo=dvc&logoColor=white" alt="DVC" />
+</div>
 
-## 📌 Problem Statement
-Indoor farming is critical for future food security but often consumes unsustainable amounts of electricity and water. This project utilizes **Deep Reinforcement Learning (Proximal Policy Optimization & A2C)** to autonomously control a simulated Bio-Farm. The AI is penalized for excessive resource use and rewarded for plant growth, forcing it to discover the most efficient, sustainable agricultural strategies.
+<br>
 
-This project directly aligns with:
-* **SDG 12:** Responsible Consumption and Production
-* **SDG 13:** Climate Action
-
-## 🏗️ System Architecture & MLOps Stack
-This system is built using decoupled microservices and industry-standard MLOps practices.
-
-* **Reinforcement Learning:** `Stable-Baselines3` & `Gymnasium` (Custom Continuous MDP Environment)
-* **Experiment Tracking & Model Registry:** `MLflow` (Hyperparameter tuning logs)
-* **Data Versioning:** `DVC` (Data Version Control for `farm_config.json` physics parameters)
-* **Backend Inference API:** `FastAPI` (REST API with prediction logging)
-* **Frontend Dashboard:** `Streamlit` (Interactive Simulation UI)
-* **Orchestration:** `Docker` & `Docker Compose`
-* **CI/CD:** `GitHub Actions` (Automated environment testing on push/PR)
+> **An end-to-end MLOps pipeline leveraging Deep Reinforcement Learning to optimize resource consumption in indoor vertical farming.** This project aligns with **SDG 12 (Responsible Consumption and Production)** and **SDG 13 (Climate Action)** by forcing an AI agent to discover the mathematical "sweet spot" between maximum plant growth and minimum water/energy usage.
 
 ---
 
-## ⚙️ Setup & Installation
+## 🏗️ System Architecture & Workflow
 
-Follow these steps to run the containerized pipeline on your local machine.
+This project abandons the monolithic script approach in favor of decoupled, production-ready microservices:
 
-### Prerequisites
-* [Docker](https://www.docker.com/products/docker-desktop/) installed and running.
-* [Git](https://git-scm.com/) installed.
+1. **The Brain (Algorithm):** `Stable-Baselines3` (PPO/A2C) operating within a custom `Gymnasium` Markov Decision Process (MDP).
+2. **The Backend (Inference):** `FastAPI` serves the trained model via a RESTful API, handling real-time sensor data and logging predictions.
+3. **The Frontend (UI):** `Streamlit` provides an interactive simulation dashboard for users to tweak physics parameters and visualize the AI's strategy.
+4. **The Engine (Orchestration):** `Docker Compose` containerizes both services, ensuring they run identically on any machine.
 
-### 1. Clone the Repository
-```bash
-git clone [https://github.com/YourUsername/RL-BioFarm-Optimization.git](https://github.com/YourUsername/RL-BioFarm-Optimization.git)
-cd RL-BioFarm-Optimization
+---
+
+## 🔐 Strict Versioning & MLOps Strategy (CO1, CO2, CO3)
+
+In Reinforcement Learning, data is generated dynamically. To ensure 100% reproducibility, this project implements a strict, multi-tiered versioning architecture:
+
+* 📦 **Environment Versioning (`Docker` & `requirements.txt`):** Guarantees that the underlying Python libraries and OS-level dependencies never shift unpredictably.
+* 💾 **Data & Physics Versioning (`DVC`):** Because we do not use static CSVs, the physical rules of the simulation (growth rates, penalty multipliers) are extracted into `farm_config.json`. **Data Version Control (DVC)** tracks changes to this file independently of the codebase.
+* 🧠 **Model Versioning & Registry (`MLflow`):** An automated hyperparameter tuning script compares PPO vs. A2C algorithms. MLflow tracks all metrics (Mean Reward, Resource Penalty) and automatically registers the highest-performing model artifact for production use.
+* 🌿 **Code Versioning (`Git` & `GitHub Actions`):** Enforces a professional `dev` ➡️ `main` branching strategy utilizing Pull Requests. A CI/CD pipeline triggers automatically on every push to test the environment integrity.
+
+---
+
+## 🗂️ Repository Structure
+
+```text
+RL-BioFarm-Optimization/
+│
+├── .github/workflows/    # CI/CD pipelines (GitHub Actions)
+├── .dvc/                 # Data Version Control configuration
+├── mlruns/               # Local MLflow tracking database
+│
+├── api.py                # FastAPI Backend Service
+├── app.py                # Streamlit Frontend Dashboard
+├── bio_farm_env.py       # Custom Gymnasium Environment definition
+├── train_agent.py        # MLflow hyperparameter tuning & training script
+│
+├── farm_config.json      # Dynamic physics parameters (Tracked via DVC)
+├── farm_config.json.dvc  # DVC pointer file
+│
+├── Dockerfile            # Container configuration
+├── docker-compose.yml    # Multi-container orchestration
+├── requirements.txt      # Locked environment dependencies
+└── README.md             # Project documentation
