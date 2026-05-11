@@ -1,0 +1,5 @@
+outs:
+- md5: a98a4ea0999b421189499d759e92eb10
+  size: 227
+  hash: md5
+  path: farm_config.json
