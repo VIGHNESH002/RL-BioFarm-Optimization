@@ -1,7 +1,0 @@
-venv/
-__pycache__/
-*.pyc
-ppo_biofarm_logs/
-mlruns/
-*.zip
-/farm_config.json
